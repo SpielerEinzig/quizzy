@@ -39,26 +39,47 @@ class _HomeScreenState extends State<HomeScreen> {
       body: screens[selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Image.asset(
+              "assets/images/bottom_navigation_bar/home_icon.png",
+              height: 36.68,
+              width: 36.68,
+              color: selectedIndex == 0 ? kDefaultColor : Colors.grey[400],
+            ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.monetization_on),
+            icon: Image.asset(
+              "assets/images/bottom_navigation_bar/withdraw_icon.png",
+              height: 36.68,
+              width: 36.68,
+              color: selectedIndex == 1 ? kDefaultColor : Colors.grey[400],
+            ),
             label: 'Withdraw',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
+            icon: Image.asset(
+              "assets/images/bottom_navigation_bar/leaderboard_icon.png",
+              height: 36.68,
+              width: 36.68,
+              color: selectedIndex == 2 ? kDefaultColor : Colors.grey[400],
+            ),
             label: 'Leaderboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Image.asset(
+              "assets/images/bottom_navigation_bar/profile_icon.png",
+              height: 36.68,
+              width: 36.68,
+              color: selectedIndex == 3 ? kDefaultColor : Colors.grey[400],
+            ),
             label: 'Profile',
           ),
         ],
         currentIndex: selectedIndex,
-        selectedItemColor: kDefaultColor,
+        unselectedLabelStyle: const TextStyle(fontSize: 10),
+        selectedLabelStyle: const TextStyle(fontSize: 10),
         onTap: _onItemTapped,
       ),
     );

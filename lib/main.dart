@@ -14,6 +14,7 @@ import 'package:quizzy/pages/home_screen/main_screen_pages/tournament.dart';
 import 'package:quizzy/pages/home_screen/profile_screen.dart';
 import 'package:quizzy/pages/home_screen/withdraw.dart';
 import 'package:quizzy/pages/home_screen/main_screen_pages/main_screen.dart';
+import 'package:quizzy/pages/matching/connecting_players.dart';
 import 'package:quizzy/pages/splash_screen.dart';
 
 void main() async {
@@ -21,12 +22,12 @@ void main() async {
 
   await Firebase.initializeApp(
       // options: const FirebaseOptions(
-      //     apiKey: "AIzaSyDhPtS9QoM8ULYEPBxeeFddj7TJEMF0d_4",
-      //     authDomain: "quizzy-5b6e3.firebaseapp.com",
-      //     projectId: "quizzy-5b6e3",
-      //     storageBucket: "quizzy-5b6e3.appspot.com",
-      //     messagingSenderId: "96758563610",
-      //     appId: "1:96758563610:web:c2508dbc5380c3468522a3"),
+      // apiKey: "AIzaSyDhPtS9QoM8ULYEPBxeeFddj7TJEMF0d_4",
+      // authDomain: "quizzy-5b6e3.firebaseapp.com",
+      // projectId: "quizzy-5b6e3",
+      // storageBucket: "quizzy-5b6e3.appspot.com",
+      // messagingSenderId: "96758563610",
+      // appId: "1:96758563610:web:c2508dbc5380c3468522a3"),
       );
 
   runApp(const MyApp());
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: 'Poppins-Regular',
         primaryColor: const Color(0xff7b5cf2),
         appBarTheme: const AppBarTheme(
           color: Color(0xff7b5cf2),
@@ -61,6 +63,10 @@ class MyApp extends StatelessWidget {
         Notifications.id: (context) => const Notifications(),
         Categories.id: (context) => const Categories(),
         Tournament.id: (context) => const Tournament(),
+        ConnectPlayers.id: (context) => const ConnectPlayers(),
+        //CountDownPage.id: (context) => const CountDownPage(),
+        //QuestionsPage.id: (context) => QuestionsPage(),
+        //ResultsPage.id: (context) => ResultsPage(),
       },
     );
   }

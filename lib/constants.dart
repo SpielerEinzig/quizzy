@@ -1,53 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 const kDefaultColor = Color(0xff7b5cf2);
+const double kDefaultBorderRadius = 10;
+const double kStackPositioning = 150;
+
+List<String> botNames = [
+  "Ali",
+  "Muhammad",
+  "Yusuf",
+  "Bilal",
+  "Hamza",
+  "Mariam",
+  "Ayesha",
+  "Fatima",
+];
 
 class NotificationList {
   String name;
-  bool accepted;
-  NotificationList({required this.name, required this.accepted});
+  String senderUid;
+  bool valid;
+  DateTime timeSent;
+  NotificationList({
+    required this.name,
+    required this.senderUid,
+    required this.valid,
+    required this.timeSent,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotificationList &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          senderUid == other.senderUid &&
+          valid == other.valid &&
+          timeSent == other.timeSent;
+
+  @override
+  int get hashCode => name.hashCode;
 }
-
-// created objects for quiz categories
-class QuizCategory {
-  IconData icon;
-  String label;
-  QuizCategory({required this.label, required this.icon});
-}
-
-//list of quiz categories
-List<QuizCategory> quizCategoryList = [
-  QuizCategory(label: "Science", icon: Icons.rocket_launch),
-  QuizCategory(label: "Geography", icon: Icons.public),
-  QuizCategory(label: "Technology", icon: Icons.tv),
-  QuizCategory(label: "Travel", icon: Icons.airplanemode_active),
-  QuizCategory(label: "Music", icon: Icons.music_note),
-  QuizCategory(label: "Art", icon: Icons.format_paint),
-  QuizCategory(label: "Math", icon: Icons.format_underlined),
-  QuizCategory(label: "Sport", icon: Icons.sports_basketball),
-  QuizCategory(label: "History", icon: Icons.menu_book),
-];
-
-//created objects for people in leaderboard
-class LeaderBoard {
-  String name;
-  int points;
-  LeaderBoard({required this.name, required this.points});
-}
-
-//dummy list of top leaderboard
-List<LeaderBoard> leaderBoardList = [
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-  LeaderBoard(name: "Adam", points: 5260),
-];
 
 Widget labelValueColumn({
   required String label,
@@ -55,13 +48,18 @@ Widget labelValueColumn({
 }) {
   return Column(
     children: [
-      Text(label),
+      Text(
+        label,
+        style: const TextStyle(
+          fontSize: 14,
+        ),
+      ),
       const SizedBox(height: 5),
       Text(
         value,
         style: const TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
         ),
       )
     ],

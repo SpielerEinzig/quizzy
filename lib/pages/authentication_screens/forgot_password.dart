@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:quizzy/components/authentication_screen_components/gradient_button.dart';
 import 'package:quizzy/pages/authentication_screens/check_email.dart';
 import 'package:quizzy/pages/authentication_screens/log_in.dart';
 
@@ -20,6 +21,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 18),
         child: Column(
@@ -32,9 +34,15 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               },
               child: Row(
                 children: const [
-                  Icon(Icons.arrow_back),
+                  Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                  ),
                   SizedBox(width: 6),
-                  Text("Back"),
+                  Text(
+                    "Back",
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ],
               ),
             ),
@@ -66,7 +74,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
+            gradientButton(
+              context: context,
+              label: "Send Instructions",
               onPressed: () async {
                 //send password reset link
                 try {
@@ -77,7 +87,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
                   );
                   Future.delayed(const Duration(seconds: 6));
-                  Navigator.popAndPushNamed(context, LogIn.id);
+                  Navigator.popAndPushNamed(context, CheckEmail.id);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -88,20 +98,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   );
                 }
               },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 20,
-                ),
-                child: Text(
-                  "Send Instructions",
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: const Color(0xff7b5cf2),
-              ),
             ),
           ],
         ),

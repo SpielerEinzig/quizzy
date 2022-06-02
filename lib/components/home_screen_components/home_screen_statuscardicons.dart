@@ -3,22 +3,27 @@ import 'package:flutter/material.dart';
 import '../../constants.dart';
 
 Widget statusCardIcon({
-  required IconData icon,
+  required String iconPath,
   required String label,
   required String value,
 }) {
   return Column(
     children: [
-      Icon(
-        icon,
-        color: kDefaultColor,
-        size: 40,
+      Image.asset(
+        iconPath,
       ),
-      Text(label),
+      const SizedBox(height: 8),
+      Text(
+        label,
+        style: const TextStyle(
+          fontSize: 13,
+        ),
+      ),
+      const SizedBox(height: 6),
       Text(
         value,
         style: const TextStyle(
-          fontSize: 25,
+          fontSize: 18,
         ),
       ),
     ],

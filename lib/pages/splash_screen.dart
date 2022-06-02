@@ -5,13 +5,18 @@ import 'package:quizzy/components/icon_avatar.dart';
 
 import 'authentication_screens/log_in.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
   Widget build(BuildContext context) {
-    Timer(const Duration(seconds: 4), () {
-      Navigator.pushNamed(context, LogIn.id);
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacementNamed(context, LogIn.id);
     });
 
     return Scaffold(

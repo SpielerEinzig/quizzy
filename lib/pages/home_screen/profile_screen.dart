@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quizzy/components/profile_screen/name_card.dart';
+import 'package:quizzy/services/location.dart';
 
-import '../../constants.dart';
+import '../../components/gradient_appbar.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String id = "profileScreen";
@@ -17,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String name = "";
   String email = "";
+  String location = "";
 
   final _auth = FirebaseAuth.instance;
   User? loggedInUser;
@@ -47,6 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         name = data['name'];
         email = data["email"];
+        location = data["location"];
       });
     }
   }
@@ -62,40 +65,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: kDefaultColor,
-        title: const Text(
-          "Leaderboard",
-          style: TextStyle(
-            fontSize: 25,
-            letterSpacing: 2,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: Stack(
         children: [
           Column(
             children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.2 - 30,
-                decoration: const BoxDecoration(
-                  color: kDefaultColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(35),
-                    bottomRight: Radius.circular(35),
-                  ),
-                ),
-              ),
+              mainPageAppBars(context: context, title: "Profile"),
             ],
           ),
           Positioned(
             left: 0,
             right: 0,
-            top: 70,
+            top: 140,
             child: Container(
               height: 360,
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -116,39 +96,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      const CircleAvatar(
-                        radius: 50,
-                        backgroundColor: kDefaultColor,
-                      ),
+                      const SizedBox(),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            name,
+                            name.toUpperCase(),
                             style: const TextStyle(
-                              fontSize: 25,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              letterSpacing: 1.3,
                             ),
                           ),
-                          const SizedBox(height: 10),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              LocationService()
+                                  .getCurrentLocation(context: context);
+                            },
                             child: Text(
                               "Change profile picture",
-                              style: TextStyle(color: Colors.grey[700]),
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  //const SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   profileNameCard(title: "First Name", value: name),
                   profileNameCard(
                       title: "Email", value: "${loggedInUser?.email}"),
-                  profileNameCard(title: "Location", value: email),
+                  profileNameCard(title: "Location", value: location),
                 ],
+              ),
+            ),
+          ),
+          Container(
+            alignment: const Alignment(-0.76, -0.65),
+            child: Container(
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.grey,
+                ),
               ),
             ),
           ),

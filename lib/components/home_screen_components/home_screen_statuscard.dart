@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quizzy/constants.dart';
 
 import 'home_screen_statuscardicons.dart';
 
@@ -10,14 +11,14 @@ Widget homeScreenStatusCard({
   return Positioned(
     left: 0,
     right: 0,
-    top: 30,
+    top: 100,
     child: Container(
       height: 120,
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(kDefaultBorderRadius),
         boxShadow: [
           BoxShadow(
             offset: const Offset(0, 10),
@@ -27,18 +28,24 @@ Widget homeScreenStatusCard({
         ],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          statusCardIcon(
-              icon: Icons.star, label: "POINT", value: point.toString()),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: statusCardIcon(
+              iconPath: "assets/images/status_card/star.png",
+              label: "POINT",
+              value: point.toString(),
+            ),
+          ),
           const VerticalDivider(),
           statusCardIcon(
-              icon: Icons.public,
+              iconPath: "assets/images/status_card/world.png",
               label: "WORLD RANK",
               value: worldRank.toString()),
           const VerticalDivider(),
           statusCardIcon(
-              icon: Icons.location_on,
+              iconPath: "assets/images/status_card/location.png",
               label: "LOCAL RANK",
               value: localRank.toString()),
         ],

@@ -1,6 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:quizzy/components/gradient_appbar.dart';
+import 'package:quizzy/pages/matching/matching_friends/connecting_friends.dart';
+import 'package:quizzy/services/invite_friend.dart';
 
 import '../../../constants.dart';
+import '../../../services/api_services.dart';
+import '../../../services/database.dart';
+
+final _fireStore = FirebaseFirestore.instance;
 
 class AddFriends extends StatefulWidget {
   static const String id = "addFriends";
@@ -12,52 +20,24 @@ class AddFriends extends StatefulWidget {
 }
 
 class _AddFriendsState extends State<AddFriends> {
+  final MatchingFriendService _matchingFriendService = MatchingFriendService();
+
+  final apiService = APIService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: kDefaultColor,
-        leading: TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-            size: 30,
-          ),
-        ),
-        title: const Text(
-          "Add Friends",
-          style: TextStyle(
-            fontSize: 25,
-            letterSpacing: 2,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: Stack(
         children: [
           Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.2 - 30,
-                decoration: const BoxDecoration(
-                  color: kDefaultColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(35),
-                    bottomRight: Radius.circular(35),
-                  ),
-                ),
-              ),
+            children: const [
+              AppbarContainer(title: "Add Friends"),
             ],
           ),
           Positioned(
             left: 0,
             right: 0,
-            top: 70,
+            top: kStackPositioning,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Container(
@@ -67,7 +47,7 @@ class _AddFriendsState extends State<AddFriends> {
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(kDefaultBorderRadius),
                   boxShadow: [
                     BoxShadow(
                       offset: const Offset(0, 10),
@@ -84,7 +64,7 @@ class _AddFriendsState extends State<AddFriends> {
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
-                        color: Colors.lightBlueAccent[100],
+                        color: const Color(0xffE1E4FC),
                       ),
                       child: TextField(
                         onChanged: (value) {},
@@ -99,37 +79,73 @@ class _AddFriendsState extends State<AddFriends> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height - 300,
                       child: ListView.builder(
-                          itemCount: leaderBoardList.length,
+                          itemCount: worldUsers.length,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 8.0),
-                              child: ListTile(
-                                leading: const CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: kDefaultColor,
-                                ),
-                                title: Text(leaderBoardList[index].name),
-                                trailing: TextButton(
-                                  onPressed: () {},
-                                  child: Container(
-                                    width: 95,
-                                    height: 45,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.lightBlueAccent[100],
-                                    ),
-                                    child: const Center(
-                                      child: Text(
-                                        "Invite",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: kDefaultColor,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: kDefaultColor,
+                                  ),
+                                  Text(worldUsers[index].name),
+                                  TextButton(
+                                    onPressed: () async {
+                                      //create game room
+                                      await _matchingFriendService
+                                          .createGameToPlayWithFriend(
+                                              creatorUid:
+                                                  userPointRankingModel.uid,
+                                              senderName:
+                                                  userPointRankingModel.name);
+
+                                      //send invite to friend's notification
+                                      await _matchingFriendService.sendInvite(
+                                        senderName: userPointRankingModel.name,
+                                        senderUid: userPointRankingModel.uid,
+                                        valid: true,
+                                        timeSent: DateTime.now(),
+                                        friendUid: worldUsers[index].uid,
+                                        friendAccepted: false,
+                                      );
+
+                                      //get questions list from api
+                                      int id = 1;
+
+                                      await apiService
+                                          .getQuizQuestions(id.toString());
+
+                                      //navigate to next page after everything is complete
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ConnectingFriends()));
+                                    },
+                                    child: Container(
+                                      width: 85,
+                                      height: 45,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                            kDefaultBorderRadius),
+                                        color: const Color(0xffE1E3FC),
+                                      ),
+                                      child: const Center(
+                                        child: Text(
+                                          "Invite",
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: Color(0xff6F77F3),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
                             );
                           }),

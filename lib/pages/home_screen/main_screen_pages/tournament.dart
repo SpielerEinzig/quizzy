@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:quizzy/components/gradient_appbar.dart';
+import 'package:quizzy/pages/matching/tournament/connecting_tournament.dart';
+import 'package:quizzy/pages/matching/tournament/search_tournament.dart';
+import 'package:quizzy/services/tournament.dart';
 
 import '../../../constants.dart';
+import '../../../services/api_services.dart';
 
 class Tournament extends StatefulWidget {
   static const String id = "tournament";
@@ -11,52 +16,22 @@ class Tournament extends StatefulWidget {
 }
 
 class _TournamentState extends State<Tournament> {
+  final apiService = APIService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: kDefaultColor,
-        leading: TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-            size: 30,
-          ),
-        ),
-        title: const Text(
-          "Tournament",
-          style: TextStyle(
-            fontSize: 25,
-            letterSpacing: 2,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: Stack(
         children: [
           Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.2 - 30,
-                decoration: const BoxDecoration(
-                  color: kDefaultColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(35),
-                    bottomRight: Radius.circular(35),
-                  ),
-                ),
-              ),
+            children: const [
+              AppbarContainer(title: "Tournament"),
             ],
           ),
           Positioned(
             left: 0,
             right: 0,
-            top: 70,
+            top: kStackPositioning,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Container(
@@ -66,7 +41,7 @@ class _TournamentState extends State<Tournament> {
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(kDefaultBorderRadius),
                   boxShadow: [
                     BoxShadow(
                       offset: const Offset(0, 10),
@@ -75,56 +50,106 @@ class _TournamentState extends State<Tournament> {
                     ),
                   ],
                 ),
-                child: ListView.builder(
-                  itemCount: quizCategoryList.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ListTile(
-                        leading: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: kDefaultColor,
-                          ),
-                          child: Center(
-                            child: Icon(
-                              quizCategoryList[index].icon,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          quizCategoryList[index].label,
-                          style: const TextStyle(
-                            letterSpacing: 1.3,
-                          ),
-                        ),
-                        trailing: TextButton(
-                          onPressed: () {},
-                          child: Container(
-                            width: 95,
-                            height: 45,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.lightBlueAccent[100],
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "Start",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: kDefaultColor,
+                child: FutureBuilder(
+                    future: apiService.getCategories(),
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (snapshot.data == null) {
+                        return const Center(child: Text("Loading..."));
+                      } else {
+                        return ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            if (snapshot.data == null) {
+                              return const Center(child: Text("Loading..."));
+                            } else {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        gradient: const LinearGradient(colors: [
+                                          Color(0xff7765F2),
+                                          Color(0xff6a82f2),
+                                        ]),
+                                      ),
+                                      child: Center(
+                                        child: Image.asset(
+                                          apiCategory[index].iconPath,
+                                          width: 25,
+                                          height: 25,
+                                        ),
+                                      ),
+                                    ),
+                                    //const SizedBox(width: 20),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          apiCategory[index].name,
+                                          style: const TextStyle(
+                                            fontSize: 17,
+                                          ),
+                                        ),
+                                        const Text(
+                                          "Lorem ipsum dolor sit amet.",
+                                          style: TextStyle(fontSize: 10),
+                                        ),
+                                      ],
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        var id = apiCategory[index].id;
+                                        id = 1;
+
+                                        await TournamentService()
+                                            .getTournamentQuestions(
+                                          id: id,
+                                          finalRound: true,
+                                        );
+
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const SearchTournament(),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: 97,
+                                        height: 47,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: const Color(0xffE1E3FC),
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            "Start",
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              color: Color(0xff6f77f2),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                              );
+                            }
+                          },
+                        );
+                      }
+                    }),
               ),
             ),
           ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:quizzy/components/authentication_screen_components/gradient_button.dart';
+import 'package:quizzy/components/gradient_appbar.dart';
 
 import '../../../constants.dart';
+import '../../../services/api_services.dart';
 
 class Categories extends StatefulWidget {
   static const String id = "categories";
@@ -11,52 +14,22 @@ class Categories extends StatefulWidget {
 }
 
 class _CategoriesState extends State<Categories> {
+  final apiService = APIService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: kDefaultColor,
-        leading: TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-            size: 30,
-          ),
-        ),
-        title: const Text(
-          "Choose Category",
-          style: TextStyle(
-            fontSize: 25,
-            letterSpacing: 2,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: Stack(
         children: [
           Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.2 - 30,
-                decoration: const BoxDecoration(
-                  color: kDefaultColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(35),
-                    bottomRight: Radius.circular(35),
-                  ),
-                ),
-              ),
+            children: const [
+              AppbarContainer(title: "Choose Category"),
             ],
           ),
           Positioned(
             left: 0,
             right: 0,
-            top: 70,
+            top: 150,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Container(
@@ -66,60 +39,93 @@ class _CategoriesState extends State<Categories> {
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      offset: const Offset(0, 10),
-                      blurRadius: 50,
-                      color: Colors.black.withOpacity(0.2),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(kDefaultBorderRadius),
                 ),
-                child: GridView.builder(
-                  itemCount: quizCategoryList.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      mainAxisSpacing: 6,
-                      crossAxisSpacing: 6,
-                      crossAxisCount: 3),
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        //play quiz by category
-                        print(quizCategoryList[index].label);
-                      },
-                      child: Container(
-                        height: 120,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlueAccent[100],
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: kDefaultColor,
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  quizCategoryList[index].icon,
-                                  color: Colors.white,
+                child: FutureBuilder(
+                    future: apiService.getCategories(),
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (snapshot.data == null) {
+                        return const Center(child: Text("Loading..."));
+                      } else {
+                        return GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  mainAxisSpacing: 6,
+                                  crossAxisSpacing: 6,
+                                  crossAxisCount: 3),
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            if (snapshot.data == null) {
+                              return const Center(child: Text("Loading..."));
+                            } else {
+                              return GestureDetector(
+                                onTap: () {
+                                  //play quiz by category
+                                  //print(apiCategory[index].name);
+                                },
+                                child: Container(
+                                  height: 120,
+                                  width: 120,
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffE1E3FC),
+                                    borderRadius: BorderRadius.circular(
+                                        kDefaultBorderRadius),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                              kDefaultBorderRadius),
+                                          gradient: const LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Color(0xff7765F2),
+                                                Color(0xff6a82f2),
+                                              ]),
+                                        ),
+                                        child: Center(
+                                          child: Image.asset(
+                                            apiCategory[index].iconPath,
+                                            height: 25,
+                                            width: 25,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        apiCategory[index].name,
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Text(quizCategoryList[index].label),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                              );
+                            }
+                          },
+                        );
+                      }
+                    }),
               ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 80,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 35),
+              child: gradientButton(
+                  label: "Accept", context: context, onPressed: () {}),
             ),
           ),
         ],

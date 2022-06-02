@@ -17,15 +17,11 @@ Widget profileNameCard({
       children: [
         Text(
           title,
-          style: TextStyle(
-            color: Colors.grey[700],
-          ),
+          style: TextStyle(color: Colors.grey[700], fontSize: 11),
         ),
         Text(
           value,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         )
       ],
     ),
