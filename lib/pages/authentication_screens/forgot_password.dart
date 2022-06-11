@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quizzy/components/authentication_screen_components/gradient_button.dart';
 import 'package:quizzy/pages/authentication_screens/check_email.dart';
-import 'package:quizzy/pages/authentication_screens/log_in.dart';
 
 class ForgotPassword extends StatefulWidget {
   static const String id = "forgotPassword";

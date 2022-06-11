@@ -7,13 +7,14 @@ Widget homeScreenStatusCard({
   required int point,
   required int worldRank,
   required int localRank,
+  required double screenHeight,
 }) {
   return Positioned(
     left: 0,
     right: 0,
-    top: 100,
+    //top: 100,
+    top: screenHeight * 0.05, //429,
     child: Container(
-      height: 120,
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(

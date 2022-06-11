@@ -63,11 +63,28 @@ Widget badgeScore({required int score, required String imagePath}) {
     child: Stack(
       children: [
         Container(
-          alignment: const Alignment(0, -0.63),
-          child: Image.asset(
-            "assets/images/results_page/ribbon.png",
-            height: 150,
-            width: 200,
+          alignment: const Alignment(0, -0.57),
+          child: Container(
+            height: 130,
+            width: 180,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/results_page/ribbon.png"),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 80.0),
+              child: Center(
+                child: Text(
+                  score.toString(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
         Container(
@@ -78,22 +95,11 @@ Widget badgeScore({required int score, required String imagePath}) {
           ),
         ),
         Container(
-          alignment: const Alignment(-0.3, -0.7),
+          alignment: const Alignment(-0.3, -0.64),
           child: Image.asset(
             imagePath,
             height: 60,
             width: 60,
-          ),
-        ),
-        Container(
-          alignment: const Alignment(0, -0.4),
-          child: Text(
-            score.toString(),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
           ),
         ),
       ],

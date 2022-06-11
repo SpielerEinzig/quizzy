@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
-Widget iconAvatar({required double radius}) {
-  return CircleAvatar(
-    radius: radius,
-    backgroundImage: const AssetImage("assets/images/icon.PNG"),
+Widget iconAvatar({required double width, required double height}) {
+  return Container(
+    height: height,
+    width: width,
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.red,
+    ),
+    child: Image.asset(
+      'assets/images/circle-icon.png',
+      fit: BoxFit.fill,
+    ),
   );
 }

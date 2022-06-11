@@ -32,26 +32,28 @@ class AppbarContainer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Center(
-            child: Container(
-              width: 50,
-              height: 50,
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                  size: 30,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Container(
+                  padding: const EdgeInsets.only(left: 18.5, top: 13.5, right: 10, bottom: 13),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
                 ),
-              ),
             ),
-          ),
+            ),
           Text(
             title,
             style: const TextStyle(

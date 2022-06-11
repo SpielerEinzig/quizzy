@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../constants.dart';
 
 Widget statusCardIcon({
   required String iconPath,

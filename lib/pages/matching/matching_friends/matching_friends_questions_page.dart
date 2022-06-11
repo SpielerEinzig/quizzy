@@ -1,30 +1,37 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:quizzy/components/authentication_screen_components/gradient_button.dart';
-import 'package:quizzy/components/gradient_appbar.dart';
-import 'package:quizzy/models/container_indicator.dart';
-import 'package:quizzy/pages/home_screen/home_screen.dart';
-import 'package:quizzy/pages/matching/result_page.dart';
 
-import '../../components/questions_page.dart';
-import '../../constants.dart';
-import '../../services/api_services.dart';
+import '../../../components/authentication_screen_components/gradient_button.dart';
+import '../../../components/gradient_appbar.dart';
+import '../../../components/questions_page.dart';
+import '../../../constants.dart';
+import '../../../models/container_indicator.dart';
+import '../../../services/api_services.dart';
+import '../../home_screen/home_screen.dart';
+import 'matching_friends_result_page.dart';
 
-class QuestionsPage extends StatefulWidget {
-  static const String id = "questionsPage";
-  String roomName;
+class MatchingFriendQuestionsPage extends StatefulWidget {
+  final String gameId;
+  final bool createdGame;
 
-  QuestionsPage({Key? key, required this.roomName}) : super(key: key);
+  const MatchingFriendQuestionsPage(
+      {Key? key, required this.createdGame, required this.gameId})
+      : super(key: key);
 
   @override
-  _QuestionsPageState createState() => _QuestionsPageState();
+  State<MatchingFriendQuestionsPage> createState() =>
+      _MatchingFriendQuestionsPageState();
 }
 
-class _QuestionsPageState extends State<QuestionsPage> {
+class _MatchingFriendQuestionsPageState
+    extends State<MatchingFriendQuestionsPage> {
+  final _fireStore = FirebaseFirestore.instance;
+
   int currentQuestion = 0;
   int score = 0;
-  int increment = 5;
+  int increment = 1;
   List<ContainerIndicatorModel> containerIndicatorList = [];
   bool buttonPressed = false;
 
@@ -37,7 +44,6 @@ class _QuestionsPageState extends State<QuestionsPage> {
 
   buildIndicatorList() {
     for (var item in questionList) {
-      print(item.answer);
       setState(() {
         containerIndicatorList
             .add(ContainerIndicatorModel(color: Colors.white));
@@ -51,9 +57,10 @@ class _QuestionsPageState extends State<QuestionsPage> {
           ? Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ResultsPage(
+                builder: (context) => MatchingFriendsResultsPage(
+                  createdGame: widget.createdGame,
                   score: score,
-                  roomName: widget.roomName,
+                  roomName: widget.gameId,
                   timeRemaining: _start,
                 ),
               ),
@@ -80,13 +87,15 @@ class _QuestionsPageState extends State<QuestionsPage> {
       oneSec,
       (Timer timer) {
         if (_start == 0) {
+          _timer.cancel();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ResultsPage(
+              builder: (context) => MatchingFriendsResultsPage(
                 score: score,
-                roomName: widget.roomName,
+                roomName: widget.gameId,
                 timeRemaining: _start,
+                createdGame: widget.createdGame,
               ),
             ),
           );
@@ -97,6 +106,34 @@ class _QuestionsPageState extends State<QuestionsPage> {
         }
       },
     );
+  }
+
+  setUserCompletedQuiz() async {
+    if (widget.createdGame == true) {
+      try {
+        await _fireStore
+            .collection("friendlyMatches")
+            .doc(widget.gameId)
+            .update({
+          "creatorDone": true,
+        });
+      } catch (e) {
+        print(
+            "Error in setUserCompleted method, error setting completed status: $e");
+      }
+    } else {
+      try {
+        await _fireStore
+            .collection("friendlyMatches")
+            .doc(widget.gameId)
+            .update({
+          "inviteDone": true,
+        });
+      } catch (e) {
+        print(
+            "Error in setUserCompleted method, error setting completed status: $e");
+      }
+    }
   }
 
   @override
@@ -110,6 +147,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
   @override
   void dispose() {
     _timer.cancel();
+    setUserCompletedQuiz();
     super.dispose();
   }
 

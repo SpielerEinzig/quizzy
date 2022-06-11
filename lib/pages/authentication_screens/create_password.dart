@@ -75,7 +75,6 @@ class _CreatePasswordState extends State<CreatePassword> {
             ElevatedButton(
               onPressed: () {
                 //implement reset password
-                print("Username:$password");
                 Navigator.pushNamed(context, HomeScreen.id);
               },
               child: const Padding(

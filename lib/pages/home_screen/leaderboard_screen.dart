@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quizzy/components/gradient_appbar.dart';
+
 import '../../components/home_screen_components/home_screen_statuscardicons.dart';
 import '../../constants.dart';
 import '../../services/database.dart';
@@ -25,9 +25,10 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               mainPageAppBars(context: context, title: "Leaderboard"),
-              const SizedBox(height: 70),
+              //const SizedBox(height: 70),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.39,
+                //color: Colors.red,
+                height: MediaQuery.of(context).size.height * 0.45,
                 child: ListView.builder(
                     itemCount: worldUsers.length,
                     itemBuilder: (context, index) {
@@ -49,15 +50,14 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
                             ],
                           ),
                           child: ListTile(
-                            isThreeLine: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
+                            // isThreeLine: true,
+                            // contentPadding: const EdgeInsets.symmetric(
+                            //     vertical: 5, horizontal: 10),
                             leading: const CircleAvatar(
                               radius: 30,
                               backgroundColor: kDefaultColor,
-                              child: FlutterLogo(
-                                size: 30,
-                              ),
+                              backgroundImage:
+                                  AssetImage("assets/images/person.png"),
                             ),
                             title: Text(
                               worldUsers[index].name,
@@ -65,9 +65,9 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            subtitle: const Text(
-                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Porttitor.",
-                              style: TextStyle(
+                            subtitle: Text(
+                              worldUsers[index].location,
+                              style: const TextStyle(
                                 fontSize: 12,
                               ),
                             ),

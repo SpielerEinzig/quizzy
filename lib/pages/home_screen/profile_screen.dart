@@ -147,6 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.grey,
+                  backgroundImage: AssetImage("assets/images/person.png"),
                 ),
               ),
             ),

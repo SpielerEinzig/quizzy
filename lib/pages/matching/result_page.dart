@@ -11,11 +11,13 @@ class ResultsPage extends StatefulWidget {
 
   int score;
   String roomName;
+  int timeRemaining;
 
   ResultsPage({
     Key? key,
     required this.score,
     required this.roomName,
+    required this.timeRemaining,
   }) : super(key: key);
 
   @override
@@ -118,8 +120,10 @@ class _ResultsPageState extends State<ResultsPage> {
                   Container(
                     height: 150,
                     width: double.infinity,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(kDefaultBorderRadius),
+                      image: const DecorationImage(
+                        fit: BoxFit.fitWidth,
                         image: AssetImage("assets/images/intersect.png"),
                       ),
                     ),
@@ -163,6 +167,9 @@ class _ResultsPageState extends State<ResultsPage> {
               context: context,
               onPressed: () async {
                 print("share button pressed");
+                print("User score: ${widget.score}\n"
+                    "Time remaining: ${widget.timeRemaining}\n"
+                    "Room Id: ${widget.roomName}\n");
               }),
         ],
       ),

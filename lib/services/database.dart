@@ -45,8 +45,9 @@ class DataBaseService {
       //String email = user.email!;
       print("Registering user");
 
-      _firestore.collection("users").doc(user.uid).get().then((doc) {
+      await _firestore.collection("users").doc(user.uid).get().then((doc) {
         if (doc.exists) {
+          print("Navigate User to Home");
           Navigator.pushReplacementNamed(context, HomeScreen.id);
         } else {
           //create user model if user does not have an account
@@ -59,6 +60,7 @@ class DataBaseService {
             "inGame": false,
           });
 
+          print("Navigate user to home after creating doc");
           Navigator.of(context).pushReplacementNamed(HomeScreen.id);
         }
       });

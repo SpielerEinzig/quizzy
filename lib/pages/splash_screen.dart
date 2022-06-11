@@ -26,10 +26,9 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircleAvatar(
-                backgroundColor: Colors.white,
-                radius: 75,
-                child: iconAvatar(radius: 65),
+              iconAvatar(
+                width: 130,
+                height: 130,
               ),
               const SizedBox(height: 10),
               const Text(

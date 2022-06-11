@@ -143,7 +143,6 @@ class _SignUpState extends State<SignUp> {
                                 password.length >= 6) {
                               //creating new user with firebase
                               try {
-                                final newUser =
                                     await _auth.createUserWithEmailAndPassword(
                                         email: email, password: password);
                                 //get userId
@@ -258,7 +257,8 @@ class _SignUpState extends State<SignUp> {
 
                                 location = getLocation!;
                               } catch (e) {
-                                print(e);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Error with location service: ${e.toString()}"),),);
                               }
                               //authenticate and register user
                               try {
@@ -296,7 +296,6 @@ class _SignUpState extends State<SignUp> {
                             TextButton(
                               onPressed: () {
                                 //implement terms and conditions
-                                print("terms and conditions");
                               },
                               child: const Text("Terms & conditions"),
                             ),
@@ -304,7 +303,6 @@ class _SignUpState extends State<SignUp> {
                             TextButton(
                               onPressed: () {
                                 //implement privacy policy
-                                print("Privacy policy");
                               },
                               child: const Text("Privacy policy"),
                             ),

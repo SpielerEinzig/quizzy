@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quizzy/components/home_screen_components/home_screen_appbar.dart';
@@ -8,12 +7,15 @@ import 'package:quizzy/pages/home_screen/main_screen_pages/add_friends.dart';
 import 'package:quizzy/pages/home_screen/main_screen_pages/categories.dart';
 import 'package:quizzy/pages/home_screen/main_screen_pages/notifications.dart';
 import 'package:quizzy/pages/home_screen/main_screen_pages/tournament.dart';
-import 'package:quizzy/pages/matching/connecting_players.dart';
+import 'package:quizzy/pages/matching/single_match/single_match_connecting_players.dart';
+//import 'package:quizzy/pages/matching/connecting_players.dart';
 import 'package:quizzy/services/api_services.dart';
 
 import '../../../components/home_screen_components/home_screen_statuscard.dart';
 import '../../../components/home_screen_components/play_tournament_card.dart';
+import '../../../components/icon_avatar.dart';
 import '../../../services/database.dart';
+import 'main_screen_drawer.dart';
 
 class MainScreen extends StatefulWidget {
   static const id = "mainScreen";
@@ -44,31 +46,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  bool testerStatus = false;
-
-  // testFunction() async {
-  //   print("starting test function");
-  //   var testStream = FirebaseFirestore.instance
-  //       .collection("test")
-  //       .doc("tester")
-  //       .snapshots()
-  //       .listen((event) {
-  //     Map<String, dynamic>? testInfo = event.data();
-  //
-  //     String testerName = testInfo!["name"];
-  //     testerStatus = testInfo["status"];
-  //
-  //     setState(() {
-  //       print("The tester is: $testerName and status is: $testerStatus");
-  //
-  //       if (testerStatus) {
-  //         print("tester is true");
-  //       } else {
-  //         print("tester is false");
-  //       }
-  //     });
-  //   });
-  // }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -83,6 +61,57 @@ class _MainScreenState extends State<MainScreen> {
     var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            iconAvatar(width: 45, height: 45),
+            const SizedBox(width: 2),
+            const Text(
+              "uizzy",
+              style: TextStyle(
+                fontSize: 40,
+                letterSpacing: 2,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        leading: IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+          icon: const Icon(
+            Icons.menu,
+            size: 40,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, Notifications.id);
+            },
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(kDefaultBorderRadius),
+              ),
+              child: const Icon(
+                Icons.notifications,
+                color: Colors.white,
+                size: 40,
+              ),
+            ),
+          ),
+        ],
+      ),
+      drawerEnableOpenDragGesture: false,
+      drawer: const MainScreenDrawer(),
       backgroundColor: Colors.grey[200],
       body: SafeArea(
         child: Stack(
@@ -90,8 +119,8 @@ class _MainScreenState extends State<MainScreen> {
             ListView(
               children: [
                 mainScreenAppBar(
-                    menuButtonPressed: () async {
-                      //await testFunction();
+                    menuButtonPressed: () {
+                      Scaffold.of(context).openDrawer();
                     },
                     notificationButtonPressed: () {
                       Navigator.pushNamed(context, Notifications.id);
@@ -149,8 +178,16 @@ class _MainScreenState extends State<MainScreen> {
                                             await apiService.getQuizQuestions(
                                                 id.toString());
 
-                                            Navigator.pushNamed(
-                                                context, ConnectPlayers.id);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) {
+                                                  return const SingleMatchConnectingPlayers();
+                                                },
+                                              ),
+                                            );
+                                            // Navigator.pushNamed(
+                                            //     context, ConnectPlayers.id);
                                           },
                                           child: Container(
                                             width: width * 0.21,
@@ -230,6 +267,7 @@ class _MainScreenState extends State<MainScreen> {
                     userId: loggedInUser!.uid),
                 builder: (context, AsyncSnapshot snapshot) {
                   return homeScreenStatusCard(
+                    screenHeight: height,
                     localRank: userPointRankingModel.localRank,
                     worldRank: userPointRankingModel.worldRank,
                     point: userPointRankingModel.point,

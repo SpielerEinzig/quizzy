@@ -101,8 +101,7 @@ class _LogInState extends State<LogIn> {
                           label: "Log In",
                           onPressed: () async {
                             try {
-                              final loggedInUser =
-                                  await _auth.signInWithEmailAndPassword(
+                              await _auth.signInWithEmailAndPassword(
                                       email: email, password: password);
                               Navigator.pushReplacementNamed(
                                   context, HomeScreen.id);
@@ -181,7 +180,8 @@ class _LogInState extends State<LogIn> {
 
                                   location = getLocation!;
                                 } catch (e) {
-                                  print(e);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text("Error with location service: ${e.toString()}"),),);
                                 }
                                 setState(() {
                                   signingUserIn = true;
@@ -191,7 +191,7 @@ class _LogInState extends State<LogIn> {
                                   await authenticationService
                                       .signInWithGoogle()
                                       .then((user) => {
-                                            databaseService
+                                        databaseService
                                                 .registerFirestoreUser(
                                               user: user,
                                               context: context,

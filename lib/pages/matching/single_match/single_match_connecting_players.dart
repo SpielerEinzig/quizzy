@@ -2,29 +2,42 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:quizzy/components/single_match_page_stack.dart';
-import 'package:quizzy/pages/matching/countdown.dart';
-import 'package:quizzy/services/matching_service/single_matching_service.dart';
+import 'package:quizzy/pages/matching/single_match/single_match_countdown.dart';
+import 'package:quizzy/services/api_services.dart';
 
-import '../../services/database.dart';
+import '../../../components/single_match_page_stack.dart';
+import '../../../services/database.dart';
+import '../../../services/matching_service/single_matching_service.dart';
 
-class ConnectPlayers extends StatefulWidget {
-  static const String id = "connectPlayers";
-
-  const ConnectPlayers({Key? key}) : super(key: key);
+class SingleMatchConnectingPlayers extends StatefulWidget {
+  const SingleMatchConnectingPlayers({Key? key}) : super(key: key);
 
   @override
-  _ConnectPlayersState createState() => _ConnectPlayersState();
+  State<SingleMatchConnectingPlayers> createState() =>
+      _SingleMatchConnectingPlayersState();
 }
 
-class _ConnectPlayersState extends State<ConnectPlayers> {
+class _SingleMatchConnectingPlayersState
+    extends State<SingleMatchConnectingPlayers> {
   final _fireStore = FirebaseFirestore.instance;
   final singleMatchService = SingleMatchingService();
+  late Future getGames;
+  //late Timer _timer;
 
   String name = userPointRankingModel.name;
   String secondUser = "Searching";
   String roomId = "";
   bool createdGame = false;
+  bool matchStarted = false;
+
+  startBotTimer() async {
+    const botCountdown = Duration(seconds: 6);
+    await Future.delayed(botCountdown);
+    if (matchStarted == false) {
+      await singleMatchService.addBot(
+          roomDocId: roomId, questionsLength: questionList.length);
+    }
+  }
 
   getGamesAvailable() async {
     await _fireStore
@@ -46,13 +59,16 @@ class _ConnectPlayersState extends State<ConnectPlayers> {
 
         roomId = gameDoc.id;
 
-        secondUser = gameDoc["secondPlayer"];
+        roomId = gameDoc.id;
+
+        secondUser = gameDoc["firstPlayer"];
       } else {
         roomId = await singleMatchService.createRoom(
             timeCreated: DateTime.now(),
             userName: userPointRankingModel.name,
             userId: userPointRankingModel.uid);
         createdGame = true;
+        startBotTimer();
       }
     });
   }
@@ -63,11 +79,26 @@ class _ConnectPlayersState extends State<ConnectPlayers> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return CountDownPage(roomName: roomID);
+            return SingleMatchCountdown(
+              gameId: roomID,
+              createdGame: createdGame,
+            );
           },
         ),
       );
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getGames = getGamesAvailable();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -77,10 +108,12 @@ class _ConnectPlayersState extends State<ConnectPlayers> {
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder(
-          future: getGamesAvailable(),
+          future: getGames,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return const Center(child: Text('Something went wrong'));
+              return Center(
+                  child: Text(
+                      'Something went wrong with future builder: ${snapshot.error.toString()}'));
             }
 
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -97,7 +130,8 @@ class _ConnectPlayersState extends State<ConnectPlayers> {
                       .snapshots(),
                   builder: (context, AsyncSnapshot snapshot) {
                     if (snapshot.hasError) {
-                      return const Center(child: Text('Something went wrong'));
+                      return const Center(
+                          child: Text('Something went wrong with stream'));
                     }
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -108,7 +142,8 @@ class _ConnectPlayersState extends State<ConnectPlayers> {
 
                     final snapshotData = snapshot.data!;
 
-                    bool matchStarted = snapshotData["hasStarted"];
+                    matchStarted = snapshotData["hasStarted"];
+                    secondUser = snapshotData["secondPlayer"];
 
                     if (matchStarted) {
                       startGame(roomID: roomId);

@@ -9,7 +9,7 @@ Widget avatarCircle({
     child: const CircleAvatar(
       backgroundColor: Color(0xff6C7FF3),
       radius: 33,
-      child: FlutterLogo(),
+      backgroundImage: AssetImage("assets/images/person.png"),
     ),
   );
 }

@@ -1,14 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:quizzy/components/gradient_appbar.dart';
+import 'package:quizzy/models/user_model.dart';
 import 'package:quizzy/pages/matching/matching_friends/connecting_friends.dart';
-import 'package:quizzy/services/invite_friend.dart';
+import 'package:quizzy/services/matching_service/friend_matching_service.dart';
 
 import '../../../constants.dart';
 import '../../../services/api_services.dart';
 import '../../../services/database.dart';
-
-final _fireStore = FirebaseFirestore.instance;
 
 class AddFriends extends StatefulWidget {
   static const String id = "addFriends";
@@ -20,9 +19,28 @@ class AddFriends extends StatefulWidget {
 }
 
 class _AddFriendsState extends State<AddFriends> {
-  final MatchingFriendService _matchingFriendService = MatchingFriendService();
-
+  final _fireStore = FirebaseFirestore.instance;
+  final _friendMatchingService = FriendMatchingService();
   final apiService = APIService();
+
+  String query = "";
+  List<UserModel> queriedUsers = [];
+
+  searchUsers({required String queryText}) async {
+    queriedUsers.clear();
+
+    List<UserModel> generatedQueryList = [];
+
+    for (var user in worldUsers) {
+      if (user.name.toLowerCase().contains(queryText.toLowerCase())) {
+        generatedQueryList.add(user);
+      }
+    }
+
+    queriedUsers = generatedQueryList;
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,18 +78,22 @@ class _AddFriendsState extends State<AddFriends> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
-                      height: 50,
-                      padding: const EdgeInsets.all(8),
+                      //height: 50,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         color: const Color(0xffE1E4FC),
                       ),
                       child: TextField(
-                        onChanged: (value) {},
+                        onChanged: (value) {
+                          query = value;
+
+                          searchUsers(queryText: value);
+                        },
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.search),
                           border: InputBorder.none,
-                          labelText: 'Search friend',
+                          hintText: 'Search friend',
                         ),
                       ),
                     ),
@@ -79,74 +101,61 @@ class _AddFriendsState extends State<AddFriends> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height - 300,
                       child: ListView.builder(
-                          itemCount: worldUsers.length,
+                          itemCount: queriedUsers.isEmpty
+                              ? worldUsers.length
+                              : queriedUsers.length,
                           itemBuilder: (context, index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: kDefaultColor,
-                                  ),
-                                  Text(worldUsers[index].name),
-                                  TextButton(
-                                    onPressed: () async {
-                                      //create game room
-                                      await _matchingFriendService
-                                          .createGameToPlayWithFriend(
-                                              creatorUid:
-                                                  userPointRankingModel.uid,
-                                              senderName:
-                                                  userPointRankingModel.name);
+                            return inviteUserListTile(
+                              name: queriedUsers.isEmpty
+                                  ? worldUsers[index].name
+                                  : queriedUsers[index].name,
+                              inviteButtonPressed: () async {
+                                //get questions list from api
+                                int id = 1;
 
-                                      //send invite to friend's notification
-                                      await _matchingFriendService.sendInvite(
-                                        senderName: userPointRankingModel.name,
-                                        senderUid: userPointRankingModel.uid,
-                                        valid: true,
-                                        timeSent: DateTime.now(),
-                                        friendUid: worldUsers[index].uid,
-                                        friendAccepted: false,
-                                      );
+                                await apiService
+                                    .getQuizQuestions(id.toString());
 
-                                      //get questions list from api
-                                      int id = 1;
+                                //create game room
+                                final gameCreated = await _friendMatchingService
+                                    .createFriendlyGame(
+                                        userId: userPointRankingModel.uid,
+                                        timeCreated: DateTime.now(),
+                                        userName: userPointRankingModel.name,
+                                        inviteUid: queriedUsers.isEmpty
+                                            ? worldUsers[index].uid
+                                            : queriedUsers[index].uid,
+                                        inviteName: queriedUsers.isEmpty
+                                            ? worldUsers[index].name
+                                            : queriedUsers[index].name);
 
-                                      await apiService
-                                          .getQuizQuestions(id.toString());
+                                String gameId = gameCreated.id;
 
-                                      //navigate to next page after everything is complete
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const ConnectingFriends()));
-                                    },
-                                    child: Container(
-                                      width: 85,
-                                      height: 45,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                            kDefaultBorderRadius),
-                                        color: const Color(0xffE1E3FC),
-                                      ),
-                                      child: const Center(
-                                        child: Text(
-                                          "Invite",
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: Color(0xff6F77F3),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                //send invite to friend's notification
+                                final inviteRef = await _friendMatchingService
+                                    .sendInviteToFriend(
+                                  inviteeName: queriedUsers.isEmpty
+                                      ? worldUsers[index].name
+                                      : queriedUsers[index].name,
+                                  inviterName: userPointRankingModel.name,
+                                  inviterUid: userPointRankingModel.uid,
+                                  inviteeUid: queriedUsers.isEmpty
+                                      ? worldUsers[index].uid
+                                      : queriedUsers[index].uid,
+                                  gameDocId: gameId,
+                                  timeSent: DateTime.now(),
+                                );
+
+                                //navigate to next page after everything is complete
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ConnectingFriends(
+                                              inviteId: inviteRef.id,
+                                              gameDocId: gameId,
+                                              isCreator: true,
+                                            )));
+                              },
                             );
                           }),
                     ),
@@ -159,4 +168,44 @@ class _AddFriendsState extends State<AddFriends> {
       ),
     );
   }
+}
+
+Widget inviteUserListTile({
+  required String name,
+  required Function() inviteButtonPressed,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const CircleAvatar(
+          radius: 25,
+          backgroundColor: kDefaultColor,
+          backgroundImage: AssetImage("assets/images/person.png"),
+        ),
+        Text(name),
+        TextButton(
+          onPressed: inviteButtonPressed,
+          child: Container(
+            width: 85,
+            height: 45,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(kDefaultBorderRadius),
+              color: const Color(0xffE1E3FC),
+            ),
+            child: const Center(
+              child: Text(
+                "Invite",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Color(0xff6F77F3),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

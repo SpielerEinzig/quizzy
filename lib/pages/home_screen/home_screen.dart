@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:quizzy/pages/home_screen/leaderboard_screen.dart';
 import 'package:quizzy/pages/home_screen/profile_screen.dart';

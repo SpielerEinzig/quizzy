@@ -34,7 +34,6 @@ class AuthenticationService {
   }
 
   //facebook Sign in
-
   Future<User?> signInWithFacebook() async {
     // Trigger the sign-in flow
     final LoginResult loginResult = await FacebookAuth.instance.login(
