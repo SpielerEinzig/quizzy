@@ -21,7 +21,9 @@ Widget tournamentPairCard({
         Container(
           alignment: const Alignment(-0.85, -0.85),
           child: Text(
-            firstPlayer,
+            firstPlayer.length <= 6
+                ? firstPlayer
+                : "${firstPlayer.substring(0, 6)}..",
             style: const TextStyle(
               fontSize: 15,
             ),
@@ -30,7 +32,9 @@ Widget tournamentPairCard({
         Container(
           alignment: const Alignment(0.85, -0.85),
           child: Text(
-            secondPlayer,
+            secondPlayer.length <= 6
+                ? secondPlayer
+                : "${secondPlayer.substring(0, 6)}..",
             style: const TextStyle(
               fontSize: 15,
             ),

@@ -99,7 +99,42 @@ class APIService {
         questionList.add(value);
       }
     } else {
-      print("Responnse code is ${response.statusCode}");
+      print("Response code is ${response.statusCode}");
+    }
+  }
+
+  getTournamentQuestions({required String id, required bool finalRound}) async {
+    String questionLength = finalRound ? 15.toString() : 10.toString();
+
+    questionList.clear();
+
+    http.Response response = await http.get(Uri.parse(
+        "http://210.56.9.60/Quizzly/api/QuizContent?categoryId=$id&difficultId=1&isActive=1&totalQuestions=$questionLength"));
+
+    if (response.statusCode == 200) {
+      var jsonData = await jsonDecode(response.body);
+
+      for (var item in jsonData) {
+        List<String> preparedList = [
+          item["option1"],
+          item["option2"],
+          item["option3"],
+          item["option4"],
+        ];
+
+        preparedList.shuffle();
+
+        var value = QuestionsModel(
+          question: item["MainQuestion"],
+          answer: item["Answer"],
+          questionAnswered: false,
+          options: preparedList,
+        );
+
+        questionList.add(value);
+      }
+    } else {
+      print("Response code is ${response.statusCode}");
     }
   }
 }

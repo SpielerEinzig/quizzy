@@ -22,7 +22,7 @@ Widget positionedScoreNamePair({
           ),
         ),
         Text(
-          name.length > 5 ? name.substring(0, 5) : name,
+          name.length > 5 ? "${name.substring(0, 5)}.." : name,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: nameFontSize,

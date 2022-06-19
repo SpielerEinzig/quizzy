@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:quizzy/components/gradient_appbar.dart';
-import 'package:quizzy/pages/matching/tournament/connecting_tournament.dart';
-import 'package:quizzy/pages/matching/tournament/search_tournament.dart';
-import 'package:quizzy/services/tournament.dart';
 
 import '../../../constants.dart';
 import '../../../services/api_services.dart';
+import '../../matching/tournament_matching/search_tournament_matches.dart';
 
 class Tournament extends StatefulWidget {
   static const String id = "tournament";
@@ -109,17 +107,17 @@ class _TournamentState extends State<Tournament> {
                                         var id = apiCategory[index].id;
                                         id = 1;
 
-                                        await TournamentService()
-                                            .getTournamentQuestions(
-                                          id: id,
-                                          finalRound: true,
+                                        await apiService.getTournamentQuestions(
+                                          id: id.toString(),
+                                          finalRound: false,
                                         );
 
-                                        Navigator.push(
+                                        Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                const SearchTournament(),
+                                                SearchTournamentMatches(
+                                                    questionsID: id),
                                           ),
                                         );
                                       },
